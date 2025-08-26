@@ -124,7 +124,7 @@ export const editorTouchSelectionHelp = (
         throw new Error("editor not existed")
     }
 
-    const element = editor.getContainerDomNode()
+    const element = editor.getDomNode()
     if (!element || !(element instanceof HTMLElement)) {
         throw new Error("editor container element not existed or it is not a HTMLElement")
     }
