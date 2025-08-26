@@ -17,7 +17,7 @@ npm install monaco-touch-selection
 ```typescript
 import * as monaco from 'monaco-editor';
 import {editorTouchSelectionHelp} from 'monaco-touch-selection';
-import 'monaco-touch-selection/style.css';
+import 'monaco-touch-selection/dist/style.css';
 
 const element = document.getElementById('container')
 

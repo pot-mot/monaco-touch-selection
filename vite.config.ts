@@ -9,7 +9,7 @@ export default defineConfig({
             entry: resolve(__dirname, 'src/index.ts'),
             name: 'monaco-touch-selection',
             formats: ['es', 'umd'],
-            fileName: 'monaco-touch-selection'
+            fileName: 'index'
         },
     },
     plugins: [
