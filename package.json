@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pot-mot/monaco-touch-selection.git",
+    "url": "git+https://github.com/pot-mot/monaco-touch-selection.git",
     "directory": "dist"
   },
   "bugs": "https://github.com/pot-mot/monaco-touch-selection/issues",
