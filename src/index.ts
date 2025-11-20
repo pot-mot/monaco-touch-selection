@@ -428,7 +428,7 @@ export const editorTouchSelectionHelp = (
 
                     let y = closerRect.top - elementRect.top - menuRect.height
                     if (y + menuRect.height > elementRect.height) y = elementRect.height - menuRect.height
-                    if (y < 0) y = 0
+                    if (y < 0) y = closerRect.top - elementRect.top + lineHeight
 
                     // 防止超出视野范围
                     if (window.visualViewport) {

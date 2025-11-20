@@ -3,6 +3,7 @@ import {DefaultToolName, editorTouchSelectionHelp} from '../index.ts';
 
 const element = document.getElementById('container')!
 
+
 const editor = monaco.editor.create(element, {
     value: '',
 });
