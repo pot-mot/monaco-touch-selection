@@ -5,6 +5,11 @@ type ICodeEditor = editor.ICodeEditor;
 const OPTION_FontSize = 52
 const OPTION_LineHeight = 67
 
+const DEFAULT_SELECTION_SYNC_TIMEOUT = 300
+const DBLCLICK_OPEN_MENU_TIMEOUT = 1000
+const REVEAL_INTERVAL = 50
+const OPEN_MENU_TIMEOUT = 100
+
 export type SelectorMenuTool = {
     name: string,
     innerHTML: string | Element | (() => string | Element),
@@ -101,8 +106,6 @@ const scrollLeftExtremityFit = (editor: ICodeEditor, touch: Touch, letterWidth: 
         editor.setScrollLeft(newScrollLeft, 0)
     }
 }
-
-const DEFAULT_SELECTION_SYNC_TIMEOUT = 300
 
 export const editorTouchSelectionHelp = (
     editor: ICodeEditor,
@@ -398,11 +401,7 @@ export const editorTouchSelectionHelp = (
             updateSelection: (selection: IRange, position: IPosition) => IRange
         ) => {
             const showSelectionMenuByTouch = (touch: Touch) => {
-                const initialSelection = editor.getSelection()
-                if (!initialSelection) return
-                const selectionIsEmpty = initialSelection.isEmpty()
-
-                if (!selectionIsEmpty && touch && selectorMenu && leftSelector && rightSelector) {
+                if (touch && selectorMenu && leftSelector && rightSelector) {
                     showSelectorMenu()
 
                     const leftRect = leftSelector.getBoundingClientRect()
@@ -422,27 +421,38 @@ export const editorTouchSelectionHelp = (
                     const elementRect = element.getBoundingClientRect()
                     const menuRect = selectorMenu.getBoundingClientRect()
 
-                    let x = closerRect.left - elementRect.left - menuRect.width / 2
-                    if (x + menuRect.width > elementRect.width) x = elementRect.width - menuRect.width
+                    let x = closerRect.left - menuRect.width / 2
+                    if (x + menuRect.width > elementRect.width + elementRect.left) x = elementRect.width + elementRect.left - menuRect.width
                     if (x < 0) x = 0
 
-                    let y = closerRect.top - elementRect.top - menuRect.height
-                    if (y + menuRect.height > elementRect.height) y = elementRect.height - menuRect.height
-                    if (y < 0) y = closerRect.top - elementRect.top + lineHeight
+                    let y = closerRect.top - menuRect.height
+                    if (y + menuRect.height > elementRect.height + elementRect.top) y = elementRect.height + elementRect.top - menuRect.height
+                    if (y < 0) y = closerRect.top + lineHeight
 
                     // 防止超出视野范围
                     if (window.visualViewport) {
-                        if (x + menuRect.width > window.visualViewport.width) x = window.visualViewport.width - menuRect.width
-                        if (y + menuRect.height > window.visualViewport.height) y = window.visualViewport.height - menuRect.height
+                        const maxX = window.visualViewport.width + window.visualViewport.offsetLeft - menuRect.width
+                        const maxY = window.visualViewport.height + window.visualViewport.offsetTop - menuRect.height
+
+                        if (x < window.visualViewport.offsetLeft) x = window.visualViewport.offsetLeft
+                        else if (x > maxX) x = maxX
+                        if (y < window.visualViewport.offsetTop) y = window.visualViewport.offsetTop
+                        else if (y > maxY) y = maxY
                     } else {
-                        if (x + menuRect.width > document.body.clientWidth) x = document.body.clientWidth - menuRect.width
-                        if (y + menuRect.height > document.body.clientHeight) y = document.body.clientHeight - menuRect.height
+                        const maxX = document.body.clientWidth + document.documentElement.offsetLeft - menuRect.width
+                        const maxY = document.body.clientHeight + document.documentElement.offsetTop - menuRect.height
+
+                        if (x < document.documentElement.offsetLeft) x = document.documentElement.offsetLeft;
+                        else if (x > maxX) x = maxX;
+                        if (y < document.body.offsetTop) y = document.body.offsetTop;
+                        else if (y > maxY) y = maxY;
                     }
 
-                    selectorMenu.style.transform = `translateX(${x + elementRect.left}px) translateY(${y + elementRect.top}px)`
+                    selectorMenu.style.transform = `translateX(${x}px) translateY(${y}px)`
                 }
             }
 
+            let touchStartTime: number = 0
             selector.addEventListener('touchstart', (event: TouchEvent) => {
                 const initialSelection = editor.getSelection()
                 if (!initialSelection) return
@@ -462,7 +472,7 @@ export const editorTouchSelectionHelp = (
                             editor.setSelection(updateSelection(initialSelection, target.position))
                         }
                     }
-                }, 100)
+                }, REVEAL_INTERVAL)
 
                 const handleMove = (event: TouchEvent) => {
                     event.preventDefault()
@@ -470,10 +480,15 @@ export const editorTouchSelectionHelp = (
                 }
 
                 const handleEnd = (event: TouchEvent) => {
+                    clearTimeout(revealTimer)
+
+                    if (Date.now() - touchStartTime > OPEN_MENU_TIMEOUT) {
+                        return
+                    }
+
                     event.preventDefault()
                     touch = event.changedTouches[0] ?? event.touches[0]
                     handleMove(event)
-                    clearTimeout(revealTimer)
 
                     if (selectorMenu && editor.getSelection() !== null) {
                         showSelectionMenuByTouch(touch)
@@ -484,6 +499,7 @@ export const editorTouchSelectionHelp = (
                     document.removeEventListener('touchcancel', handleEnd)
                 }
 
+                touchStartTime = Date.now()
                 document.addEventListener('touchmove', handleMove, {passive: false})
                 document.addEventListener('touchend', handleEnd)
                 document.addEventListener('touchcancel', handleEnd)
@@ -495,19 +511,22 @@ export const editorTouchSelectionHelp = (
 
         const setupTextCursorSelectWord = (textSelector: HTMLDivElement) => {
             let lastTouchTime = 0
+
             textSelector.addEventListener('touchstart', () => {
+                lastTouchTime = Date.now()
+            }, {passive: true})
+
+            textSelector.addEventListener('touchend', () => {
+                if (Date.now() - lastTouchTime > DBLCLICK_OPEN_MENU_TIMEOUT) {
+                    return
+                }
+
                 const selection = editor.getSelection()
                 if (!selection) return
                 if (selection?.startColumn !== selection.endColumn || selection.startLineNumber !== selection.endLineNumber) return
 
                 const model = editor.getModel()
                 if (!model) return
-
-                const currentTouchTime = Date.now()
-                if (currentTouchTime - lastTouchTime > 200) {
-                    lastTouchTime = currentTouchTime
-                    return
-                }
 
                 const word = model.getWordAtPosition(selection.getStartPosition())
                 if (word) {
@@ -516,6 +535,9 @@ export const editorTouchSelectionHelp = (
                         startColumn: word.startColumn,
                         endLineNumber: selection.endLineNumber,
                         endColumn: word.endColumn,
+                    })
+                    setTimeout(() => {
+                        editor.focus()
                     })
                 }
             }, {passive: true})
