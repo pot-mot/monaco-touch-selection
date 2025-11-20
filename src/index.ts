@@ -398,7 +398,11 @@ export const editorTouchSelectionHelp = (
             updateSelection: (selection: IRange, position: IPosition) => IRange
         ) => {
             const showSelectionMenuByTouch = (touch: Touch) => {
-                if (touch && selectorMenu && leftSelector && rightSelector) {
+                const initialSelection = editor.getSelection()
+                if (!initialSelection) return
+                const selectionIsEmpty = initialSelection.isEmpty()
+
+                if (!selectionIsEmpty && touch && selectorMenu && leftSelector && rightSelector) {
                     showSelectorMenu()
 
                     const leftRect = leftSelector.getBoundingClientRect()
@@ -445,12 +449,18 @@ export const editorTouchSelectionHelp = (
 
                 let touch = event.changedTouches[0] ?? event.touches[0]
 
+                const selectionIsEmpty = initialSelection.isEmpty()
+
                 let revealTimer = setInterval(() => {
                     scrollTopExtremityFit(editor, touch, lineHeight)
                     scrollLeftExtremityFit(editor, touch, fontSize)
                     const target = editor.getTargetAtClientPoint(touch.clientX, touch.clientY - lineHeight / 2)
                     if (target && target.position) {
-                        editor.setSelection(updateSelection(initialSelection, target.position))
+                        if (selectionIsEmpty) {
+                            editor.setPosition(target.position)
+                        } else {
+                            editor.setSelection(updateSelection(initialSelection, target.position))
+                        }
                     }
                 }, 100)
 
