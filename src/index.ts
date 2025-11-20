@@ -550,7 +550,7 @@ export const editorTouchSelectionHelp = (
     viewBox="0 0 24 24"
     stroke-linecap="round"
     stroke-linejoin="round"
-    fill="none"
+    style="fill: none;"
 >
     <path d="M 5 8 m 0 2 a 2 2 0 0 1 2 -2 h 8 a 2 2 0 0 1 2 2 v 8 a 2 2 0 0 1 -2 2 h -8 a 2 2 0 0 1 -2 -2 z M 9 6 a 2 2 0 0 1 2 -2 h 8 a 2 2 0 0 1 2 2 v 8 a 2 2 0 0 1 -2 2"/>
 </svg>`,
@@ -568,7 +568,7 @@ export const editorTouchSelectionHelp = (
     viewBox="0 0 24 24"
     stroke-linecap="round"
     stroke-linejoin="round"
-    fill="none"
+    style="fill: none;"
 >
     <path d="M7 17m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
     <path d="M17 17m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
@@ -589,7 +589,7 @@ export const editorTouchSelectionHelp = (
     viewBox="0 0 24 24"
     stroke-linecap="round"
     stroke-linejoin="round"
-    fill="none"
+    style="fill: none;"
 >
     <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h3m9 -9v-5a2 2 0 0 0 -2 -2h-2" />
     <path d="M13 17v-1a1 1 0 0 1 1 -1h1m3 0h1a1 1 0 0 1 1 1v1m0 3v1a1 1 0 0 1 -1 1h-1m-3 0h-1a1 1 0 0 1 -1 -1v-1" />
@@ -609,7 +609,7 @@ export const editorTouchSelectionHelp = (
     viewBox="0 0 24 24"
     stroke-linecap="round"
     stroke-linejoin="round"
-    fill="none"
+    style="fill: none;"
 >
     <path d="M9 14l-4 -4l4 -4"/>
     <path d="M5 10h11a4 4 0 1 1 0 8h-1"/>
@@ -628,7 +628,7 @@ export const editorTouchSelectionHelp = (
     viewBox="0 0 24 24"
     stroke-linecap="round"
     stroke-linejoin="round"
-    fill="none"
+    style="fill: none;"
 >
     <path d="M15 14l4 -4l-4 -4"/>
     <path d="M19 10h-11a4 4 0 1 0 0 8h1"/>
@@ -647,7 +647,7 @@ export const editorTouchSelectionHelp = (
     viewBox="0 0 24 24"
     stroke-linecap="round"
     stroke-linejoin="round"
-    fill="none"
+    style="fill: none;"
 >
     <path d="M 2 6 v 12 M 17 16 l 4 -4 l -4 -4 M 7 16 l -4 -4 l 4 -4 M 22 6 v 12 M 5 12 h 14"/>
 </svg>`,
@@ -665,7 +665,7 @@ export const editorTouchSelectionHelp = (
     viewBox="0 0 24 24"
     stroke-linecap="round"
     stroke-linejoin="round"
-    fill="none"
+    style="fill: none;"
 >
     <path d="M18 6l-12 12" />
     <path d="M6 6l12 12" />
